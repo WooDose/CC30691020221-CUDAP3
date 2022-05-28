@@ -73,7 +73,8 @@ void CPU_HoughTran (unsigned char *pic, int w, int h, int **acc)
 __global__ void GPU_HoughTran (unsigned char *pic, int w, int h, int *acc, float rMax, float rScale, float *d_Cos, float *d_Sin)
 {
   //TODO calcular: int gloID = ?
-  int gloID = w * h + 1; //TODO
+  int gloID = (blockIdx.x) * blockDim.x +  threadIdx.x;
+  //int gloID = w * h + 1; //TODO
   if (gloID > w * h) return;      // in case of extra threads in block
 
   int xCent = w / 2;
@@ -184,3 +185,4 @@ int main (int argc, char **argv)
 
   return 0;
 }
+
