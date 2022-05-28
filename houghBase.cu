@@ -181,8 +181,17 @@ int main (int argc, char **argv)
   }
   printf("Done with time %f\n", milliseconds);
 
-  // TODO clean-up
+  // TODO clean-up - DONE
+	free(pcCos);
+	free(pcSin);
+	free(h_hough);
+  cudaFree((void *) d_Cos);
+	cudaFree((void *) d_Sin);
+	cudaFree((void *) d_in);
+	cudaFree((void *) d_hough);
 
+
+  
   return 0;
 }
 
