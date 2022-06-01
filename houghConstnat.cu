@@ -53,8 +53,8 @@ void CPU_HoughTran (unsigned char *pic, int w, int h, int **acc)
 //*****************************************************************
 // TODO usar memoria constante para la tabla de senos y cosenos
 // inicializarlo en main y pasarlo al device
-//__constant__ float d_Cos[degreeBins];
-//__constant__ float d_Sin[degreeBins];
+__constant__ float d_Cos[degreeBins];
+__constant__ float d_Sin[degreeBins];
 
 //*****************************************************************
 //TODO Kernel memoria compartida
@@ -116,11 +116,11 @@ int main (int argc, char **argv)
   int w = inImg.x_dim;
   int h = inImg.y_dim;
 
-  float* d_Cos;
-  float* d_Sin;
+  // float* d_Cos;
+  // float* d_Sin;
 
-  cudaMalloc ((void **) &d_Cos, sizeof (float) * degreeBins);
-  cudaMalloc ((void **) &d_Sin, sizeof (float) * degreeBins);
+  cudaMallocManaged ((void **) &d_Cos, sizeof (float) * degreeBins);
+  cudaMallocManaged ((void **) &d_Sin, sizeof (float) * degreeBins);
 
   // CPU calculation
   CPU_HoughTran(inImg.pixels, w, h, &cpuht);
@@ -140,8 +140,8 @@ int main (int argc, char **argv)
   float rScale = 2 * rMax / rBins;
 
   // TODO eventualmente volver memoria global
-  cudaMemcpy(d_Cos, pcCos, sizeof (float) * degreeBins, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_Sin, pcSin, sizeof (float) * degreeBins, cudaMemcpyHostToDevice);
+  cudaMemcpyToSymbol(d_Cos, pcCos, sizeof (float) * degreeBins);//, cudaMemcpyHostToDevice);
+  cudaMemcpyToSymbol(d_Sin, pcSin, sizeof (float) * degreeBins);//, cudaMemcpyHostToDevice);
 
   // setup and copy data from host to device
   unsigned char *d_in, *h_in;
