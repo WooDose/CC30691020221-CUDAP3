@@ -70,7 +70,7 @@ __constant__ float d_Sin[degreeBins];
 
 // GPU kernel. One thread per image pixel is spawned.
 // The accummulator memory needs to be allocated by the host in global memory
-__global__ void GPU_HoughTran (unsigned char *pic, int w, int h, int *acc, float rMax, float rScale, float *d_Cos, float *d_Sin)
+__global__ void GPU_HoughTran (unsigned char *pic, int w, int h, int *acc, float rMax, float rScale)
 {
   //TODO calcular: int gloID = ?
   int gloID = (blockIdx.x) * blockDim.x +  threadIdx.x;
@@ -164,7 +164,7 @@ int main (int argc, char **argv)
   cudaEventCreate(&stop);
 
   cudaEventRecord(start);
-  GPU_HoughTran <<< blockNum, 256 >>> (d_in, w, h, d_hough, rMax, rScale, d_Cos, d_Sin);
+  GPU_HoughTran <<< blockNum, 256 >>> (d_in, w, h, d_hough, rMax, rScale);
   cudaEventRecord(stop);
 
   cudaEventSynchronize(stop);
@@ -182,6 +182,13 @@ int main (int argc, char **argv)
   printf("Done with time %f\n", milliseconds);
 
   // TODO clean-up
+  free(pcCos);
+	free(pcSin);
+	free(h_hough);
+  cudaFree((void *) d_Cos);
+	cudaFree((void *) d_Sin);
+	cudaFree((void *) d_in);
+	cudaFree((void *) d_hough);
 
   return 0;
 }
